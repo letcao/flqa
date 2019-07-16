@@ -1,0 +1,9 @@
+.DS_Store
+.vscode
+.idea
+*.swp
+data
+log
+processed
+record
+__pycache__
