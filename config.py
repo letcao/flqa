@@ -36,7 +36,7 @@ if not os.path.exists(prepro_dir):
 
 flags.DEFINE_string("mode", "train", "train/debug/test")
 
-flags.DEFINE_string("log_dir", log_dir, "")
+flags.DEFINE_string("qa_log_dir", log_dir, "")
 flags.DEFINE_string("train_file", train_file, "")
 flags.DEFINE_string("dev_file", dev_file, "")
 flags.DEFINE_string("glove_word_file", glove_word_file, "")
