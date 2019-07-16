@@ -91,19 +91,25 @@ class FlowQA(object):
             # shape: (batch_size, turn_size, ques_size, glove_dim)
             questions_glove = tf.nn.embedding_lookup(self.word_mat, self.questions_idxs)
 
+            #############
+            # REMOVE COVE
             # load pretrained cove model from keras
-            cove_model = load_model(self.config.cove_word_file)
+            # cove_model = load_model(self.config.cove_word_file)
             # shape: (batch_size, para_size, cove_dim)
-            context_cove = cove_model(context_glove)
-            _questions_glove = tf.reshape(questions_glove, [questions_batch, self.ques_size, self.config.glove_dim])
-            _questions_cove = cove_model(_questions_glove)
-            questions_cove = tf.reshape(_questions_cove, [self.batch_size, self.turn_size, self.ques_size, self.config.cove_dim])
+            # context_cove = cove_model(context_glove)
+            # _questions_glove = tf.reshape(questions_glove, [questions_batch, self.ques_size, self.config.glove_dim])
+            # _questions_cove = cove_model(_questions_glove)
+            # questions_cove = tf.reshape(_questions_cove, [self.batch_size, self.turn_size, self.ques_size, self.config.cove_dim])
+            # REMOVE COVE
+            #############
 
             # shape: (batch_size, para_size, [glove_dim(300) + cove_dim(600) + elmo_dim(1024) = embedding_dim])
-            c = tf.concat([context_glove, context_cove], axis=-1)
+            # c = tf.concat([context_glove, context_cove], axis=-1)
             # shape: (batch_size, turn_size, ques_size, embedding_dim)
-            q = tf.concat([questions_glove, questions_cove], axis=-1)
-            embedding_dim = self.config.glove_dim + self.config.cove_dim
+            # q = tf.concat([questions_glove, questions_cove], axis=-1)
+            c = context_glove
+            q = questions_glove
+            embedding_dim = self.config.glove_dim # + self.config.cove_dim
 
         with tf.variable_scope("encoding"):
             # context encoding - attention on question
