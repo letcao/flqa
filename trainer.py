@@ -64,8 +64,7 @@ def train(config):
                     dev_losses.append(dev_loss)
 
                 sess.run(tf.assign(model.is_train, tf.constant(True, dtype=tf.bool)))
-                dev_loss_sum =
-                tf.Summary(value=[tf.Summary.Value(tag="dev/loss",
+                dev_loss_sum = tf.Summary(value=[tf.Summary.Value(tag="dev/loss",
                     simple_value=np.mean(dev_losses))])
                 writer.add_summary(dev_loss_sum, global_step)
                 print("Validation loss is {}:".format(np.mean(dev_losses)))
