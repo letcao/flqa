@@ -24,6 +24,7 @@ elmo_vocab_file = os.path.join(prepro_dir, "elmo_vocab.txt")
 glove_word_emb_file = os.path.join(prepro_dir, "glove_word_emb.json")
 glove_word2idx_file = os.path.join(prepro_dir, "glove_word2idx.json")
 
+checkpoint_dir = "ckpt"
 
 if not os.path.exists(data_dir):
     os.makedirs(data_dir)
@@ -33,6 +34,8 @@ if not os.path.exists(record_dir):
     os.makedirs(record_dir)
 if not os.path.exists(prepro_dir):
     os.makedirs(prepro_dir)
+if not os.path.exists(checkpoint_dir):
+    os.makedirs(checkpoint_dir)
 
 flags.DEFINE_string("mode", "train", "train/debug/test")
 
@@ -69,9 +72,11 @@ flags.DEFINE_integer("grad_clip", 5, "global norm gradient clipping")
 flags.DEFINE_integer("dev_batch_size", 4, "batch of validation data")
 flags.DEFINE_integer("dev_steps", 113, "number of validation steps")
 flags.DEFINE_float("learning_rate", 10e-3, "learning rate")
-flags.DEFINE_integer("train_steps", 100000, "number of training steps")
+flags.DEFINE_integer("train_steps", 50000, "number of training steps")
 flags.DEFINE_integer("dev_period", 5000, "validation period")
 flags.DEFINE_integer("save_period", 500, "save period")
+
+flags.DEFINE_string("checkpoint_dir", checkpoint_dir, "")
 
 
 def main(_):

@@ -1,6 +1,7 @@
 import tensorflow as tf
 import ujson as json
 import numpy as np
+import os
 from tqdm import tqdm
 
 from model import FlowQA
@@ -33,6 +34,8 @@ def train(config):
 
         writer = tf.summary.FileWriter(config.log_dir, sess.graph)
         sess.run(tf.global_variables_initializer())
+        saver = tf.train.Saver()
+        saver.restore(sess, tf.train.latest_checkpoint(config.checkpoint_dir))
 
         train_handle = sess.run(train_iterator.string_handle())
         dev_handle = sess.run(dev_iterator.string_handle())
@@ -42,9 +45,11 @@ def train(config):
         for _ in tqdm(range(config.train_steps)):
             global_step = sess.run(model.global_step) + 1
             loss, _ = sess.run([model.loss, model.train_op], feed_dict={handle: train_handle})
+
             if global_step % config.save_period == 0:
                 loss_sum = tf.Summary(value=[tf.Summary.Value(tag="model/loss", simple_value=loss)])
                 writer.add_summary(loss_sum, global_step)
+
             if global_step % config.dev_period == 0:
                 sess.run(tf.assign(model.is_train, tf.constant(False, dtype=tf.bool)))
                 dev_losses = []
@@ -56,4 +61,6 @@ def train(config):
                 dev_loss_sum = tf.Summary(value=[tf.Summary.Value(tag="model/loss", simple_value=np.mean(dev_loss))])
                 writer.add_summary(dev_loss_sum, global_step)
                 writer.flush()
-
+                filename = os.path.join(
+                    config.checkpoint_dir, "model_{}.ckpt".format(global_step))
+                saver.save(sess, filename)
