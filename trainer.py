@@ -35,7 +35,11 @@ def train(config):
         writer = tf.summary.FileWriter(config.log_dir, sess.graph)
         sess.run(tf.global_variables_initializer())
         saver = tf.train.Saver()
-        saver.restore(sess, tf.train.latest_checkpoint(config.checkpoint_dir))
+
+        checkpoint_file = os.path.join(config.checkpoint_dir, "model.ckpt")
+        if tf.train.checkpoint_exists(checkpoint_file):
+            print("Restoring from checkpoint...")
+            saver.restore(sess, checkpoint_file)
 
         train_handle = sess.run(train_iterator.string_handle())
         dev_handle = sess.run(dev_iterator.string_handle())
@@ -61,6 +65,4 @@ def train(config):
                 dev_loss_sum = tf.Summary(value=[tf.Summary.Value(tag="model/loss", simple_value=np.mean(dev_loss))])
                 writer.add_summary(dev_loss_sum, global_step)
                 writer.flush()
-                filename = os.path.join(
-                    config.checkpoint_dir, "model_{}.ckpt".format(global_step))
-                saver.save(sess, filename)
+                saver.save(sess, checkpoint_file)
