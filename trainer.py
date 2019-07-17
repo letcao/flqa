@@ -53,6 +53,8 @@ def train(config):
             if global_step % config.save_period == 0:
                 loss_sum = tf.Summary(value=[tf.Summary.Value(tag="model/loss", simple_value=loss)])
                 writer.add_summary(loss_sum, global_step)
+                print("Training loss after {} step is {}:".format(global_step,
+                    loss))
 
             if global_step % config.dev_period == 0:
                 sess.run(tf.assign(model.is_train, tf.constant(False, dtype=tf.bool)))
@@ -62,7 +64,10 @@ def train(config):
                     dev_losses.append(dev_loss)
 
                 sess.run(tf.assign(model.is_train, tf.constant(True, dtype=tf.bool)))
-                dev_loss_sum = tf.Summary(value=[tf.Summary.Value(tag="model/loss", simple_value=np.mean(dev_loss))])
+                dev_loss_sum =
+                tf.Summary(value=[tf.Summary.Value(tag="dev/loss",
+                    simple_value=np.mean(dev_losses))])
                 writer.add_summary(dev_loss_sum, global_step)
+                print("Validation loss is {}:".format(np.mean(dev_losses)))
                 writer.flush()
                 saver.save(sess, checkpoint_file)
