@@ -49,12 +49,13 @@ def train(config):
         for _ in tqdm(range(config.train_steps)):
             global_step = sess.run(model.global_step) + 1
             loss, _ = sess.run([model.loss, model.train_op], feed_dict={handle: train_handle})
+            if global_step % 5 == 0:
+                print("Training loss after {} step is {}:".format(global_step,
+                    loss))
 
             if global_step % config.save_period == 0:
                 loss_sum = tf.Summary(value=[tf.Summary.Value(tag="model/loss", simple_value=loss)])
                 writer.add_summary(loss_sum, global_step)
-                print("Training loss after {} step is {}:".format(global_step,
-                    loss))
 
             if global_step % config.dev_period == 0:
                 sess.run(tf.assign(model.is_train, tf.constant(False, dtype=tf.bool)))
